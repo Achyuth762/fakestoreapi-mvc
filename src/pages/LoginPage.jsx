@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import {
   Box,
   Button,
@@ -10,14 +11,24 @@ import {
   Typography,
   Alert,
 } from "@mui/material";
+import { motion } from "framer-motion";
 import { useAuth } from "../Ccontext/AuthContext.jsx";
 
-export default function LoginPage({ onLoginSuccess }) {
+const MotionBox = motion(Box);
+const MotionCard = motion(Card);
+const MotionButton = motion(Button);
+
+export default function LoginPage() {
   const { login } = useAuth();
+  const navigate = useNavigate();
+  const location = useLocation();
   const [username, setUsername] = useState("mor_2314");
   const [password, setPassword] = useState("83r5^_");
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+
+  // Get the page they tried to visit, or default to /store
+  const from = location.state?.from?.pathname || "/store";
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -29,7 +40,8 @@ export default function LoginPage({ onLoginSuccess }) {
     setError("");
     try {
       await login(username, password);
-      onLoginSuccess?.();
+      // Navigate to the page they tried to visit or /store
+      navigate(from, { replace: true });
     } catch {
       setError("Invalid credentials. Try: mor_2314 / 83r5^_");
     } finally {
@@ -38,7 +50,10 @@ export default function LoginPage({ onLoginSuccess }) {
   };
 
   return (
-    <Box
+    <MotionBox
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
       sx={{
         minHeight: "100vh",
         display: "flex",
@@ -48,7 +63,10 @@ export default function LoginPage({ onLoginSuccess }) {
         p: 2,
       }}
     >
-      <Card
+      <MotionCard
+        initial={{ opacity: 0, y: 20, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
+        transition={{ duration: 0.5, delay: 0.2, ease: "easeOut" }}
         sx={{ width: "100%", maxWidth: 400, borderRadius: 3 }}
         elevation={0}
         variant="outlined"
@@ -87,11 +105,14 @@ export default function LoginPage({ onLoginSuccess }) {
               sx={{ mb: 3 }}
               autoComplete="current-password"
             />
-            <Button
+            <MotionButton
               type="submit"
               variant="contained"
               fullWidth
               disabled={loading}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
               sx={{
                 py: 1.2,
                 borderRadius: 2,
@@ -104,12 +125,12 @@ export default function LoginPage({ onLoginSuccess }) {
               ) : (
                 "Sign in"
               )}
-            </Button>
+            </MotionButton>
           </Box>
 
           <Divider sx={{ my: 2 }} />
         </CardContent>
-      </Card>
-    </Box>
+      </MotionCard>
+    </MotionBox>
   );
 }

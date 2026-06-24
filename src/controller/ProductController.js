@@ -1,7 +1,6 @@
 import {
   getAllProducts,
   getCategories,
-  createProduct as apiCreateProduct,
 } from "../api/fakestore";
 import { Product } from "../models/Product";
 

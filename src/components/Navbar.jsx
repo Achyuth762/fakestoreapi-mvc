@@ -11,16 +11,28 @@ import {
 } from "@mui/material";
 import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
 import LogoutIcon from "@mui/icons-material/Logout";
+import { motion, AnimatePresence } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useAuth } from "../Ccontext/AuthContext.jsx";
 import { useCart } from "../Ccontext/CartContext";
+
+const MotionIconButton = motion(IconButton);
+const MotionBadge = motion(Badge);
+const MotionButton = motion(Button);
 
 export default function Navbar() {
   const { user, logout } = useAuth();
   const { totalItems } = useCart();
+  const navigate = useNavigate();
 
   const initials = user?.username
     ? user.username.substring(0, 2).toUpperCase()
     : "U";
+
+  const handleLogout = () => {
+    logout();
+    navigate("/login");
+  };
 
   return (
     <AppBar
@@ -45,11 +57,23 @@ export default function Navbar() {
         {/* Right side */}
         <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
           <Tooltip title="Cart">
-            <IconButton color="inherit">
-              <Badge badgeContent={totalItems} color="primary">
+            <MotionIconButton 
+              color="inherit"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
+            >
+              <MotionBadge 
+                badgeContent={totalItems} 
+                color="primary"
+                key={totalItems}
+                initial={{ scale: 1.5 }}
+                animate={{ scale: 1 }}
+                transition={{ type: "spring", stiffness: 500, damping: 15 }}
+              >
                 <ShoppingCartIcon />
-              </Badge>
-            </IconButton>
+              </MotionBadge>
+            </MotionIconButton>
           </Tooltip>
 
           <Tooltip title={`Signed in as ${user?.username}`}>
@@ -67,15 +91,18 @@ export default function Navbar() {
           </Tooltip>
 
           <Tooltip title="Sign out">
-            <Button
+            <MotionButton
               variant="text"
               size="small"
               startIcon={<LogoutIcon fontSize="small" />}
-              onClick={logout}
+              onClick={handleLogout}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
               sx={{ textTransform: "none", color: "text.secondary" }}
             >
               Sign out
-            </Button>
+            </MotionButton>
           </Tooltip>
         </Box>
       </Toolbar>

@@ -14,7 +14,11 @@ import {
 import CloseIcon from "@mui/icons-material/Close";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 import { useCart } from "../Ccontext/CartContext";
+
+const MotionDialog = motion(Dialog);
+const MotionButton = motion(Button);
 
 export default function ProductDetailDialog({ product, open, onClose }) {
   const { addItem } = useCart();
@@ -120,21 +124,27 @@ export default function ProductDetailDialog({ product, open, onClose }) {
           </Box>
 
           <Box sx={{ display: "flex", gap: 1, mt: 3 }}>
-            <Button
+            <MotionButton
               variant="contained"
               startIcon={<AddShoppingCartIcon />}
               onClick={handleAdd}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
               sx={{ borderRadius: 2, textTransform: "none", flex: 1 }}
             >
               Add to cart
-            </Button>
-            <Button
+            </MotionButton>
+            <MotionButton
               variant="outlined"
               onClick={onClose}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              transition={{ type: "spring", stiffness: 400, damping: 17 }}
               sx={{ borderRadius: 2, textTransform: "none" }}
             >
               Close
-            </Button>
+            </MotionButton>
           </Box>
         </DialogContent>
       </Dialog>

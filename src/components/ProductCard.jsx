@@ -10,18 +10,37 @@ import {
   Box,
 } from "@mui/material";
 import AddShoppingCartIcon from "@mui/icons-material/AddShoppingCart";
+import { motion } from "framer-motion";
+import { useNavigate } from "react-router-dom";
 import { useCart } from "../Ccontext/CartContext";
 
-export default function ProductCard({ product, onClick }) {
+const MotionCard = motion(Card);
+const MotionIconButton = motion(IconButton);
+
+export default function ProductCard({ product }) {
   const { addItem } = useCart();
+  const navigate = useNavigate();
 
   const handleAddToCart = (e) => {
     e.stopPropagation();
     addItem(product);
   };
 
+  const handleCardClick = () => {
+    navigate(`/products/${product.id}`);
+  };
+
   return (
-    <Card
+    <MotionCard
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.5, ease: "easeOut" }}
+      whileHover={{ 
+        y: -8, 
+        boxShadow: "0 12px 24px rgba(60, 52, 137, 0.15)",
+        transition: { duration: 0.3 }
+      }}
       variant="outlined"
       sx={{
         borderRadius: 3,
@@ -32,7 +51,7 @@ export default function ProductCard({ product, onClick }) {
         "&:hover": { borderColor: "primary.main", boxShadow: "0 0 0 1px" },
       }}
     >
-      <CardActionArea onClick={() => onClick(product)} sx={{ flexGrow: 1 }}>
+      <CardActionArea onClick={handleCardClick} sx={{ flexGrow: 1 }}>
         <Box
           sx={{
             height: 180,
@@ -92,19 +111,22 @@ export default function ProductCard({ product, onClick }) {
           {product.formattedPrice}
         </Typography>
         <Tooltip title="Add to cart">
-          <IconButton
+          <MotionIconButton
             size="small"
             color="primary"
             onClick={handleAddToCart}
+            whileHover={{ scale: 1.1, rotate: 5 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
             sx={{
               bgcolor: "primary.50",
               "&:hover": { bgcolor: "primary.100" },
             }}
           >
             <AddShoppingCartIcon fontSize="small" />
-          </IconButton>
+          </MotionIconButton>
         </Tooltip>
       </Box>
-    </Card>
+    </MotionCard>
   );
 }

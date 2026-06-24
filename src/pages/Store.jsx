@@ -8,14 +8,17 @@ import {
   Stack,
   Typography,
 } from "@mui/material";
-
+import { motion, AnimatePresence } from "framer-motion";
 import {
   fetchProducts,
   fetchCategories,
 } from "../controller/ProductController";
 import ProductCard from "../components/ProductCard";
-import ProductDetailDialog from "../components/ProductDetailDialoge";
 import Navbar from "../components/Navbar";
+
+const MotionBox = motion(Box);
+const MotionStack = motion(Stack);
+const MotionChip = motion(Chip);
 
 export default function StorePage() {
   const [products, setProducts] = useState([]);
@@ -23,8 +26,6 @@ export default function StorePage() {
   const [activeCategory, setActiveCategory] = useState("all");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-  const [selectedProduct, setSelectedProduct] = useState(null);
-  const [dialogOpen, setDialogOpen] = useState(false);
 
   useEffect(() => {
     const load = async () => {
@@ -32,7 +33,7 @@ export default function StorePage() {
       setError("");
       try {
         const [prods, cats] = await Promise.all([
-          fetchProducts(), // Remote Data Source → Controller → Product model
+          fetchProducts(),
           fetchCategories(),
         ]);
         setProducts(prods);
@@ -51,18 +52,16 @@ export default function StorePage() {
       ? products
       : products.filter((p) => p.category === activeCategory);
 
-  const handleCardClick = (product) => {
-    setSelectedProduct(product);
-    setDialogOpen(true);
-  };
-
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: "grey.50" }}>
       <Navbar />
 
       <Box sx={{ maxWidth: 1200, mx: "auto", px: 3, py: 4 }}>
         {/* Header */}
-        <Box
+        <MotionBox
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, ease: "easeOut" }}
           sx={{
             display: "flex",
             alignItems: "center",
@@ -83,34 +82,45 @@ export default function StorePage() {
               </Typography>
             )}
           </Typography>
-        </Box>
+        </MotionBox>
 
-        <Stack
+        <MotionStack
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.6, delay: 0.2 }}
           direction="row"
           spacing={1}
           flexWrap="wrap"
           useFlexGap
           sx={{ mb: 3 }}
         >
-          <Chip
+          <MotionChip
             label="All"
             clickable
             color={activeCategory === "all" ? "primary" : "default"}
             variant={activeCategory === "all" ? "filled" : "outlined"}
             onClick={() => setActiveCategory("all")}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            transition={{ type: "spring", stiffness: 400, damping: 17 }}
           />
-          {categories.map((cat) => (
-            <Chip
+          {categories.map((cat, index) => (
+            <MotionChip
               key={cat}
               label={cat}
               clickable
               color={activeCategory === cat ? "primary" : "default"}
               variant={activeCategory === cat ? "filled" : "outlined"}
               onClick={() => setActiveCategory(cat)}
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3, delay: index * 0.05 }}
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
               sx={{ textTransform: "capitalize" }}
             />
           ))}
-        </Stack>
+        </MotionStack>
 
         {error && (
           <Typography color="error" textAlign="center" mt={6}>
@@ -142,7 +152,7 @@ export default function StorePage() {
               ))
             : filtered.map((product) => (
                 <Grid item xs={12} sm={6} md={4} lg={3} key={product.id}>
-                  <ProductCard product={product} onClick={handleCardClick} />
+                  <ProductCard product={product} />
                 </Grid>
               ))}
         </Grid>
@@ -153,12 +163,6 @@ export default function StorePage() {
           </Typography>
         )}
       </Box>
-
-      <ProductDetailDialog
-        product={selectedProduct}
-        open={dialogOpen}
-        onClose={() => setDialogOpen(false)}
-      />
     </Box>
   );
 }

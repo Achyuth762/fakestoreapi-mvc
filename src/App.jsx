@@ -14,10 +14,8 @@ export default function App() {
       <AuthProvider>
         <CartProvider>
           <Routes>
-            {/* Root redirect to store */}
             <Route path="/" element={<Navigate to="/store" replace />} />
 
-            {/* Login route - redirect if already authenticated */}
             <Route
               path="/login"
               element={
@@ -27,7 +25,6 @@ export default function App() {
               }
             />
 
-            {/* Protected store route */}
             <Route
               path="/store"
               element={
@@ -37,7 +34,6 @@ export default function App() {
               }
             />
 
-            {/* Protected product detail route */}
             <Route
               path="/products/:id"
               element={
@@ -47,7 +43,6 @@ export default function App() {
               }
             />
 
-            {/* 404 Not Found */}
             <Route path="*" element={<NotFound />} />
           </Routes>
         </CartProvider>
